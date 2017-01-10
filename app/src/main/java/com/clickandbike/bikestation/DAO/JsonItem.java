@@ -15,6 +15,10 @@ public class JsonItem {
         @SerializedName("message")
         private String mMessage = "Could not connect to cloud !";
 
+        @SerializedName("result")
+        private String mResult = "false";
+
+
         @SerializedName("action")
         private String mAction = "nothing";
 
@@ -27,12 +31,38 @@ public class JsonItem {
             }
             return Boolean.parseBoolean(mSuccess);
         }
+        public void setSuccess(boolean success) {
+            mSuccess = String.valueOf(success);
+        }
+
+         public boolean getResult() {
+            if (mResult.equals("1")) {
+                mResult = "true";
+            }
+            if (mResult.equals("0")) {
+                mResult = "false";
+            }
+            //We need success to be true to check result
+            if (!this.getSuccess()) {
+                mResult = "false";
+            }
+            return Boolean.parseBoolean(mResult);
+        }
+        public void setResult(boolean result) {
+            mResult = String.valueOf(result);
+        }
 
         public String getMessage() {
             return mMessage;
         }
 
-        public String getAction() {
+        public void setMessage(String message) {
+            mMessage = message;
+        }
+
+
+
+       public String getAction() {
         return mAction;
     }
 
@@ -40,5 +70,10 @@ public class JsonItem {
             Gson gson = new GsonBuilder().create();
             JsonItem answer = gson.fromJson(response, JsonItem.class);
             return(answer);
+        }
+
+        public String encodeJSON() {
+            Gson gson = new GsonBuilder().create();
+            return gson.toJson(this);
         }
 }

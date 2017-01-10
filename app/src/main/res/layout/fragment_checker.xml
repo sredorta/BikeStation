@@ -24,31 +24,32 @@
             android:layout_weight="2"
             android:gravity="bottom">
 
-            <com.clickandbike.bikestation.View.ImageViewChecker
+            <com.clickandbike.bikestation.View.IconView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:id="@+id/imageSettings"
                 android:src="@drawable/network"
                 android:visibility="visible" />
 
-            <com.clickandbike.bikestation.View.ImageViewChecker
+            <com.clickandbike.bikestation.View.IconView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:id="@+id/imageNetwork"
                 android:src="@drawable/network" />
-            <com.clickandbike.bikestation.View.ImageViewChecker
+
+            <com.clickandbike.bikestation.View.IconView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:id="@+id/imageCloud"
                 android:src="@drawable/network"
                 android:visibility="visible" />
 
-            <com.clickandbike.bikestation.View.ImageViewChecker
+            <com.clickandbike.bikestation.View.IconView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:id="@+id/imageGpio"
                 android:src="@drawable/network" />
-            <com.clickandbike.bikestation.View.ImageViewChecker
+            <com.clickandbike.bikestation.View.IconView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:id="@+id/imageGps"
@@ -69,5 +70,13 @@
             android:layout_marginBottom="40dp" />
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

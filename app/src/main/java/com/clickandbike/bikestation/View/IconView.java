@@ -17,8 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.clickandbike.bikestation.Singleton.Locker;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,50 +26,45 @@ import java.io.InputStream;
  * This class contains an special ImageView with all animations and things
  * The only thing required is set the result before the animation ends
  */
-public class ImageViewChecker extends ImageView {
-    private static Boolean DEBUG_MODE = false;
+public class IconView extends ImageView {
+    private static Boolean DEBUG_MODE = true;
     private Context mContext;
-    private static final String TAG ="ImageViewChecker::";
+    private static final String TAG ="IconView::";
     private static final String IMAGE_ICONS_FOLDER = "checkerImages";
+    private static final int FINAL_LANDING_Y_COORDINATE = 250; //450 for the snapdragon
     private Bitmap mOriginalBitmap;
     private Bitmap mRedBitmap;
     private Bitmap mGreenBitmap;
     private Bitmap mSepiaBitmap;
     private AssetManager mAssets;
     private String mName = "";
-    private Animator.AnimatorListener animatorEndListener;
-    private ImageViewChecker mImageViewChecker;
-    //Setts the color accordingly after animation
-    private int mIterations = 4;
+    private IconView mIconView;
+    private int mIterations = 4;        // Number of iterations
+    private long mDelay = 0;            // Delay for the animation
+    private boolean mResult = false;    //Stores the result so that it turns red/green depending on boolean
 
     //Default constructor
-    public ImageViewChecker(Context context) {
+    public IconView(Context context) {
         super(context);
         mContext = context;
         mAssets = context.getAssets();
 
     }
     //Default constructor
-    public ImageViewChecker(Context context, AttributeSet atts) {
+    public IconView(Context context, AttributeSet atts) {
         super(context,atts);
         mContext = context;
         mAssets = context.getAssets();
-        mImageViewChecker = this;
+        mIconView = this;
     }
 
-    public ImageViewChecker(Context context, AttributeSet atts, int defStyleAttr) {
+    public IconView(Context context, AttributeSet atts, int defStyleAttr) {
         super(context,atts,defStyleAttr);
         mContext = context;
         mAssets = context.getAssets();
-        mImageViewChecker = this;
+        mIconView = this;
     }
-    /*
-    public ImageViewChecker(Context context, AttributeSet atts,int defStyleAttr,int defStyleRes) {
-        super(context,atts,defStyleAttr,defStyleRes);
-        mContext = context;
-        mAssets = context.getAssets();
-    }
-*/
+
 
     //Handle Logs in Debug mode
     public static void setDebugMode(Boolean mode) {
@@ -80,15 +73,19 @@ public class ImageViewChecker extends ImageView {
     }
 
 
-  //  public void setResult(Boolean result) {
-  //      mResult = result;
-  //  }
-  //  public Boolean getResult() {
-   //     return mResult;
-   // }
+    public void setResult(Boolean result) {
+        Log.i(TAG,"Setting Result to : " + result);
+        mResult = result;
+    }
+    public Boolean getResult() {
+        return mResult;
+    }
 
     public void setIterations(int iterations ) {
         mIterations = iterations;
+    }
+    public void setDelay(long delay ) {
+        mDelay = delay;
     }
     public int getIterations() {
         return mIterations;
@@ -197,13 +194,13 @@ public class ImageViewChecker extends ImageView {
         if (DEBUG_MODE) Log.i(TAG,"Started initial anim");
         //Turn on visibility
         this.setVisibility(View.VISIBLE);
-        ObjectAnimator fallDownAnimator = ObjectAnimator.ofFloat(this, "y", -100, 450).setDuration(1000);
+        ObjectAnimator fallDownAnimator = ObjectAnimator.ofFloat(this, "y", -100, FINAL_LANDING_Y_COORDINATE).setDuration(1000);
         return fallDownAnimator;
     }
     private ObjectAnimator startFadeInOutAnimation() {
         if (DEBUG_MODE) Log.i(TAG,"Started fadeInOut anim");
         ObjectAnimator fadeInOutAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(2000);
-        fadeInOutAnimator.setRepeatCount(mImageViewChecker.getIterations());
+        fadeInOutAnimator.setRepeatCount(mIconView.getIterations());
         return fadeInOutAnimator;
     }
     private ObjectAnimator startFadeOutAnimation() {
@@ -219,38 +216,12 @@ public class ImageViewChecker extends ImageView {
         fadeInAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
-                Locker myLocker = Locker.getLocker();
-                Boolean mResult;
-                if (DEBUG_MODE) Log.i(TAG,"Checking for " + mName);
-                switch (mName) {
-                    case "gps.png":
-                        mResult = myLocker.isGpsLocated();
-                        Log.i(TAG,"CHECK GPS: " + mResult);
-                        break;
-                    case "cloud.png":
-                        mResult = myLocker.isCloudAlive();
-                        Log.i(TAG,"CHECK CLOUD: " + mResult);
-                        break;
-                    case "gpio.png":
-                        mResult = myLocker.isGpioAlive();
-                        Log.i(TAG,"CHECK GPIO: " + mResult);
-                        break;
-                    case "network.png":
-                        mResult = myLocker.isInternetConnected();
-                        Log.i(TAG,"CHECK NETWORK: " + mResult);
-                        break;
-                    case "settings.png":
-                        mResult = true;
-                        Log.i(TAG,"CHECK SETTINGS: " + mResult);
-                        break;
-                    default:
-                        mResult = false;
-                }
-
+                //final Locker myLocker = Locker.getLocker();
+                if (DEBUG_MODE) Log.i(TAG,"Checking for " + mName + "mResult is: " + mResult );
                 if (mResult) {
-                    mImageViewChecker.setImageColor("green");
+                    mIconView.setImageColor("green");
                 } else {
-                    mImageViewChecker.setImageColor("red");
+                    mIconView.setImageColor("red");
                 }
             }
             @Override
@@ -267,7 +238,10 @@ public class ImageViewChecker extends ImageView {
     public AnimatorSet startAnimation() {
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playSequentially(startFallDownAnimation(),startFadeInOutAnimation(),startFadeOutAnimation(),startFadeInAnimation());
+        animatorSet.setStartDelay(this.mDelay);
+        Log.i(TAG, "Animation delay is : " + mDelay);
         animatorSet.start();
         return animatorSet;
     }
+
 }

@@ -12,11 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.clickandbike.bikestation.DAO.CloudFetchr;
 import com.clickandbike.bikestation.DAO.GPIO;
 import com.clickandbike.bikestation.R;
 import com.clickandbike.bikestation.Service.PollService;
-import com.clickandbike.bikestation.View.ImageViewChecker;
 
 /**
  * Created by sredorta on 12/19/2016.
