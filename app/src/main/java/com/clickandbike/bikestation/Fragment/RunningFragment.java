@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.clickandbike.bikestation.Activity.RunningActivity;
 import com.clickandbike.bikestation.DAO.GPIO;
@@ -99,7 +100,7 @@ public class RunningFragment extends Fragment {
         public void run() {
             ObjectAnimator leftOutAnimator = ObjectAnimator.ofFloat(this, "x", myAdsImageXorigin,-1000).setDuration(2000);
             ObjectAnimator leftInAnimator = ObjectAnimator.ofFloat(this, "x",  1000, myAdsImageXorigin).setDuration(2000);
-            ObjectAnimator fadeOutAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0).setDuration(1000);
+            ObjectAnimator fadeOutAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0).setDuration(2000);
             fadeOutAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animator) {}
@@ -118,18 +119,16 @@ public class RunningFragment extends Fragment {
                 public void onAnimationRepeat(Animator animator) {}
             });
             ObjectAnimator fadeInAnimator = ObjectAnimator.ofFloat(this, "alpha", 0, 1).setDuration(2000);
-            fadeInAnimator.setStartDelay(1000);
-            leftInAnimator.setStartDelay(1000);
+            fadeInAnimator.setStartDelay(3000);
+            leftInAnimator.setStartDelay(2000);
             AnimatorSet animatorSet = new AnimatorSet();
             animatorSet.playTogether(fadeOutAnimator, leftOutAnimator, fadeInAnimator,leftInAnimator);
             animatorSet.setTarget(myAdsImage);
             animatorSet.start();
 
-            //Do something after ADS_INTERVAL
-/*            lastImageIndex = lastImageIndex + 1;
-            if (lastImageIndex >= mLocker.lImages.size()) lastImageIndex = 0;
-            lastImage = mLocker.lImages.get(lastImageIndex);
-            myAdsImage.setImageBitmap(lastImage.getBitmap());*/
+            //Same but better can be achieved with a ViewFlipper!!!!!!!!!
+
+            //Do this forever !
             handler.postDelayed(this, ADS_INTERVAL);
         }};
 

@@ -108,34 +108,6 @@ public class CheckerFragment extends Fragment {
         IconGPS.setIterations(20);
         IconGPS.setDelay(400);
 
-        //Only for debug !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        final Button button = (Button) v.findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CloudFetchr.setDebugMode(true);
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(this.createRunnable());
-                executor.shutdown();
-            }
-
-            // Create a runnable with the desired task to accomplish
-            public Runnable createRunnable() {
-                final Locker mLocker = Locker.getLocker();
-                return new Runnable() {
-                    @Override
-                    public void run() {
-                                Boolean myResult = false;
-                                Log.i("SERGI:::", "Getting images delta !");
-                                new CloudFetchr().getImagesDelta();
-
-                    }
-                };
-
-            }
-        });
-        //***************************************************** End of for debug
-
         IconSettings.startAnimation();
 
         //Executes sequentially tasks
