@@ -11,6 +11,7 @@ import com.clickandbike.bikestation.DAO.ImageItem;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -87,12 +88,15 @@ public class Locker {
             //Reset the lImages list
             Locker.lImages = new ArrayList<>();
         } else {
-            for (ImageItem item : Locker.lImages) {
+            //Need to use iterator to avoid concurrent exception
+            Iterator<ImageItem> iter = Locker.lImages.iterator();
+            while (iter.hasNext()) {
+                ImageItem item = iter.next();
                 if (item.getId().equals(id)) {
                     //Remove the file and also remove the object from the list
                     File myFile = new File(item.getPath());
                     myFile.delete();
-                    Locker.lImages.remove(item);
+                    iter.remove();
                     if (DEBUG_MODE) Log.i(TAG, "Removing image file :" + item.getPath());
                 }
             }

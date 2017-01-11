@@ -14,17 +14,29 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.clickandbike.bikestation.DAO.CloudFetchr;
+import com.clickandbike.bikestation.DAO.GPIO;
+import com.clickandbike.bikestation.Singleton.Locker;
+import com.clickandbike.bikestation.View.IconView;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by sredorta on 11/29/2016.
  */
 
 public class PollService extends Service {
-    static final public String BROADCAST_ACTION = "com.clickandbike.bikestation.PollService";
+    private static Boolean DEBUG_MODE = true;
     private static final String TAG = "PollService::";
+
+    static final public String BROADCAST_ACTION = "com.clickandbike.bikestation.PollService";
+
     public static Context mContext;
     private static final int POLL_INTERVAL = 1000*2; // 6 seconds
+    private static final int POLL_INTERVAL_IMAGES = 1000*30;    //Interval to see if new images are available
+    private static final int CODE_POLL_IMAGES = 0;
     private static Handler handler = new Handler();
+    private static Handler handlerImagePoll = new Handler();
 
     //Constructor
     public PollService() {
@@ -36,8 +48,21 @@ public class PollService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG,"Created poll service onCreate!");
-        handler.postDelayed(sendData, POLL_INTERVAL);
+        //handler.postDelayed(sendData, POLL_INTERVAL);
+        handlerImagePoll.postDelayed(pollImages, POLL_INTERVAL_IMAGES);
     }
+
+    //This is the code that will be generated
+    private final Runnable pollImages = new Runnable() {
+        @Override
+        public void run() {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(PollService.createRunnable(CODE_POLL_IMAGES));
+            //executor.execute(this.createRunnable(CODE_GPIO_CHECK, IconGPIO));
+            executor.shutdown();
+
+            handler.postDelayed(this, POLL_INTERVAL_IMAGES);
+        }};
 
 
 
@@ -73,6 +98,29 @@ public class PollService extends Service {
             sendBroadcast(myIntent);
         }
     }
+
+    // Create a runnable with the desired task to accomplish
+    public static Runnable createRunnable(final int code) {
+        final Locker mLocker = Locker.getLocker();
+
+        return new Runnable() {
+            @Override
+            public void run() {
+                Boolean myResult = false;
+                switch (code) {
+                    case PollService.CODE_POLL_IMAGES:
+                        if (DEBUG_MODE) Log.i(TAG, "Polling to synchronize Ads images...");
+                        myResult = new CloudFetchr().getImagesDelta();
+                        break;
+                    default:
+                        new CloudFetchr().isCloudConnected();
+                }
+            }
+        };
+
+    }
+
+
 
 
 
